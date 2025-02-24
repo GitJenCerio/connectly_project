@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from .models import User
 
 
+
 def get_users(request):
     try:
         users = list(User.objects.values('id', 'username', 'email', 'created_at'))
@@ -24,6 +25,7 @@ def create_user(request):
             return JsonResponse({'id': user.id, 'message': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
 
 from .models import Post
 
@@ -48,6 +50,7 @@ def create_post(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
+@csrf_exempt
 def delete_all_users(request):
     # Delete all users from the User model
     User.objects.all().delete()
