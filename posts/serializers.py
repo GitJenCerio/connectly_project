@@ -5,8 +5,7 @@ from .models import User, Post, Comment
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'created_at']
-
+        fields = ['username', 'email']  # Exclude sensitive fields like password
 
 class PostSerializer(serializers.ModelSerializer):
     comments = serializers.StringRelatedField(many=True, read_only=True)
