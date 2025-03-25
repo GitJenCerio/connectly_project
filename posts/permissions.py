@@ -1,25 +1,22 @@
 from rest_framework.permissions import BasePermission
 
-class IsPostAuthor(BasePermission):
+
+class IsAuthorOrReadOnly(BasePermission):
+    """
+    Allows access only to the author of the object, otherwise read-only.
+    """
     def has_object_permission(self, request, view, obj):
-        print("==== PERMISSION DEBUG ====")
-        print("obj.author:", obj.author)
-        print("obj.author.id:", obj.author.id)
-        print("request.user:", request.user)
-        print("request.user.id:", request.user.id)
-        print("Admin group exists? ->", request.user.groups.filter(name="Admin").exists())
-        print("IS MATCH? ->", obj.author.id == request.user.id)
-        print("===========================")
-
-        # Admin bypass
-        if request.user.groups.filter(name="Admin").exists():
-            print("✅ Admin passed!")
+        # SAFE_METHODS = GET, HEAD, OPTIONS
+        if request.method in ('GET', 'HEAD', 'OPTIONS'):
             return True
+        # Otherwise must be the author
+        return obj.author == request.user
 
-        # Author check
-        if obj.author.id == request.user.id:
-            print("✅ Author passed!")
-            return True
+class IsAdminUser(BasePermission):
+    """
+    Custom permission to only allow admin users to access a particular view.
+    """
+    def has_permission(self, request, view):
+        # Only allow admins (is_staff=True) to access the resource
+        return request.user and request.user.is_authenticated and request.user.is_staff
 
-        print("❌ Blocked!")
-        return False
