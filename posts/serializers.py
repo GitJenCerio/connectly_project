@@ -4,11 +4,15 @@ from .models import User, Post, Comment, PostLike, CommentLike
 
 
 class UserSerializer(serializers.ModelSerializer):
- class Meta:
-    model = User
-    fields = ['username', 'email'] # Exclude sensitive fieldslike password
+    password = serializers.CharField(write_only=True)
 
-        
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']  # Include password
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+       
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username', read_only=True)
     comments = serializers.StringRelatedField(many=True, read_only=True)
