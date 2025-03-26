@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     UserListCreate, UserDetailView,
-    CreatePostView, PostDetailView,
+    PostView,
     CommentListCreateView, CommentDetailView,
     PostLikeListCreateView, PostLikeDetailView,
     CommentLikeListCreateView, CommentLikeDetailView
@@ -13,8 +13,8 @@ urlpatterns = [
     path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
 
     # Post endpoints
-    path('posts/', CreatePostView.as_view(), name='post-list-create'),
-    path('posts/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
+    path('posts/', PostView.as_view(), name='post-list-create'),
+    path('posts/<int:pk>/', PostView.as_view(), name='post-detail'),
 
     # Comment endpoints
     path('comments/', CommentListCreateView.as_view(), name='comment-list-create'),

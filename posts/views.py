@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
-from .models import User, Post, Comment, PostLike, CommentLike
+from .models import Post, Comment, PostLike, CommentLike
 from .serializers import (
     UserSerializer, PostSerializer, CommentSerializer,
     PostLikeSerializer, CommentLikeSerializer
 )
 from .permissions import IsAuthorOrReadOnly
 from factories.post_factory import PostFactory
+from django.contrib.auth.models import User
 
 
 
@@ -71,21 +72,31 @@ class UserDetailView(APIView):
 # -----------------------------
 #   POST VIEWS
 # -----------------------------
-class CreatePostView(APIView):
+class PostView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated()]
+        elif self.request.method in ['PUT', 'DELETE']:
+            return [IsAuthorOrReadOnly()]
+        return [permission() for permission in self.permission_classes]
+
+    def get_object(self, pk):
+        return get_object_or_404(Post, pk=pk)
+
+    def get(self, request, pk=None):
+        if pk:
+            post = self.get_object(pk)
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
+        else:
+            posts = Post.objects.all()
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data)
+
     def post(self, request):
-        user = request.user  # Correctly access the authenticated user
-
-        if not user.is_authenticated:
-            return Response({'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        # Debugging - Ensure the user is a valid instance
-        print(f"Authenticated user: {user}")
-        if not isinstance(user, User):
-            return Response({'error': 'Invalid user instance'}, status=status.HTTP_400_BAD_REQUEST)
-
         data = request.data
         try:
             post = PostFactory.create_post(
@@ -93,25 +104,25 @@ class CreatePostView(APIView):
                 title=data['title'],
                 content=data.get('content', ''),
                 metadata=data.get('metadata', {}),
-                author=user  # Pass the authenticated user as the author
+                author=request.user  # ✅ Author is assigned here already
             )
-            return Response({'message': 'Post created successfully!', 'post_id': post.id}, status=status.HTTP_201_CREATED)
+
+            print(type(request.user), request.user)
+
+            return Response(
+                {'message': 'Post created successfully!', 'post_id': post.id},
+                status=status.HTTP_201_CREATED
+            )
+
+        except KeyError as e:
+            return Response({'error': f'Missing field: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-class PostDetailView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthorOrReadOnly]
-
-    def get_object(self, pk):
-        return get_object_or_404(Post, pk=pk)
-
-    def get(self, request, pk):
-        post = self.get_object(pk)
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
+    def put(self, request, pk=None):
+        if not pk:
+            return Response({'error': 'Post ID is required for PUT'}, status=status.HTTP_400_BAD_REQUEST)
         post = self.get_object(pk)
         self.check_object_permissions(request, post)
         serializer = PostSerializer(post, data=request.data, partial=True)
@@ -121,13 +132,14 @@ class PostDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
+    def delete(self, request, pk=None):
+        if not pk:
+            return Response({'error': 'Post ID is required for DELETE'}, status=status.HTTP_400_BAD_REQUEST)
         post = self.get_object(pk)
         self.check_object_permissions(request, post)
         logger.info(f"Deleted post: {post.title}")
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 # -----------------------------
 #   COMMENT VIEWS
@@ -263,3 +275,12 @@ class CommentLikeDetailView(APIView):
         logger.info(f"Removing like from {comment_like.user.username} on comment #{comment_like.comment.id}")
         comment_like.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class ProtectedView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+
+    def get(self, request):
+        return Response({"message": "Authenticated!"})

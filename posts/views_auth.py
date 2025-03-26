@@ -15,3 +15,4 @@ class CustomObtainAuthToken(ObtainAuthToken):
             'user_id': token.user_id,
             'username': token.user.username,
         })
+

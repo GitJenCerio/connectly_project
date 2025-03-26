@@ -10,14 +10,13 @@ class UserSerializer(serializers.ModelSerializer):
 
         
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    author = serializers.CharField(source='author.username', read_only=True)
     comments = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = [
-            'id', 'title', 'content', 'post_type', 'metadata',
-            'author', 'created_at', 'comments'
+            'id', 'title', 'content', 'post_type', 'created_at', 'author', 'comments'
         ]
     def validate_title(self, value):
         if not value.strip():
@@ -31,23 +30,16 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    # Mark the author as read-only so it's auto-assigned
-    author = serializers.PrimaryKeyRelatedField(read_only=True)
-    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
-
     class Meta:
         model = Comment
-        fields = ['id', 'text', 'author', 'post', 'created_at']
+        fields = ['id', 'post', 'text', 'author', 'created_at']
+        read_only_fields = ['author', 'created_at']
 
-    def validate_text(self, value):
-        if len(value.strip()) < 2:
-            raise serializers.ValidationError("Comment text must be at least 2 characters.")
-        return value
-
-    def validate_content(self, value):
-        if len(value.strip()) < 10:
-            raise serializers.ValidationError("Content must be at least 10 characters.")
-        return value
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['author'] = request.user
+        return super().create(validated_data)
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
