@@ -3,6 +3,7 @@ from .models import User, Post, Comment, PostLike, CommentLike
 
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -12,28 +13,55 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(read_only=True)  # ✅ this adds the author's username
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'post', 'text', 'author', 'created_at']
+        read_only_fields = ['author', 'created_at']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['author'] = request.user
+        return super().create(validated_data)
        
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.CharField(source='author.username', read_only=True)
-    comments = serializers.StringRelatedField(many=True, read_only=True)
+    author = serializers.StringRelatedField()
+    comments = CommentSerializer(many=True, read_only=True)
+    comment_count = serializers.SerializerMethodField()
+    likes = serializers.SerializerMethodField()
+    like_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = [
-            'id', 'title', 'content', 'post_type', 'created_at', 'author', 'comments'
+            'id',
+            'title',
+            'content',
+            'post_type',
+            'created_at',
+            'author',
+            'comments',
+            'comment_count',
+            'likes',
+            'like_count',
         ]
-    def validate_title(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("Title cannot be empty.")
-        return value
 
-    def validate_content(self, value):
-        if len(value.strip()) < 10:
-            raise serializers.ValidationError("Content must be at least 10 characters.")
-        return value
+    def get_comment_count(self, obj):
+        return obj.comments.count()
 
+    def get_like_count(self, obj):
+        return obj.likes.count()
+
+    def get_likes(self, obj):
+        return [like.user.username for like in obj.likes.all()]
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.StringRelatedField(read_only=True)  # ✅ this adds the author's username
+
     class Meta:
         model = Comment
         fields = ['id', 'post', 'text', 'author', 'created_at']
