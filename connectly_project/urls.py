@@ -16,13 +16,19 @@ Including another URLconf
 """
 
 
+
 # connectly_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from posts.views_auth import CustomObtainAuthToken
+from posts.views import GoogleLogin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('posts.urls')),  # your existing API endpoints
     path('api/login/', CustomObtainAuthToken.as_view(), name='api-login'),
+    path('auth/google/login/', GoogleLogin.as_view(), name='google-login'),
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('auth/', include('allauth.socialaccount.urls')),
 ]

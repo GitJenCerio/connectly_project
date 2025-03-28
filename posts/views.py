@@ -13,6 +13,9 @@ from .serializers import (
 from .permissions import IsAuthorOrReadOnly
 from factories.post_factory import PostFactory
 from django.contrib.auth.models import User
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+
 
 
 
@@ -318,3 +321,34 @@ class ProtectedView(APIView):
 
     def get(self, request):
         return Response({"message": "Authenticated!"})
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+
+    def get_response_data(self, serializer):
+        """
+        Customize the response data to include user details.
+        """
+        data = super().get_response_data(serializer)
+        # Check if the user has a profile picture URL (optional, if implemented)
+        user = self.user
+        extra = {
+            "pk": user.pk,
+            "email": user.email,
+            "username": user.username,
+        }
+        # If you are storing a profile picture URL, include it
+        if hasattr(user, "profile") and user.profile.image_url:
+            extra["profile_picture"] = user.profile.image_url
+        data["user"] = extra
+        return data
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            logger.error("Google OAuth login failed: %s", str(e))
+            return Response(
+                {"error": "Google login failed. " + str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
