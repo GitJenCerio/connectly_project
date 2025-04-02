@@ -57,22 +57,8 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
     def get_likes(self, obj):
-        return [like.user.username for like in obj.likes.all()]
-
-class CommentSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(read_only=True)  # ✅ this adds the author's username
-
-    class Meta:
-        model = Comment
-        fields = ['id', 'post', 'text', 'author', 'created_at']
-        read_only_fields = ['author', 'created_at']
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            validated_data['author'] = request.user
-        return super().create(validated_data)
-
+        # Fetch the likes for the post through the PostLike model
+        return [like.user.username for like in obj.post_likes_related.all()]
 
 class PostLikeSerializer(serializers.ModelSerializer):
     # Mark user as read-only to auto-assign from logged-in user

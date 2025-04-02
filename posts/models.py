@@ -16,7 +16,10 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} by {self.author.username}"
+    
+    likes = models.ManyToManyField(User, through='PostLike', related_name='liked_posts')
+    
        
 class Comment(models.Model):
     text = models.TextField()
@@ -30,7 +33,7 @@ class Comment(models.Model):
 
 class PostLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='post_likes')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_likes_related')  # Changed related_name here
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -38,7 +41,6 @@ class PostLike(models.Model):
 
     def __str__(self):
         return f"{self.user.username} liked {self.post.title}"
-
 
 class CommentLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_likes')
@@ -50,3 +52,13 @@ class CommentLike(models.Model):
 
     def __str__(self):
         return f"{self.user.username} liked comment #{self.comment.id}"
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    followed = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('follower', 'followed')
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.followed.username}"

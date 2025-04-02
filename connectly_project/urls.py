@@ -22,6 +22,7 @@ from django.contrib import admin
 from django.urls import path, include
 from posts.views_auth import CustomObtainAuthToken
 from posts.views import GoogleLogin
+from posts.views import NewsFeedView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,4 +32,5 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path('auth/', include('allauth.socialaccount.urls')),
+   
 ]

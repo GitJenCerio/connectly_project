@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import TokenAuthentication
-from .models import Post, Comment, PostLike, CommentLike
+from .models import Post, Comment, PostLike, CommentLike, Follow
 from .serializers import (
     UserSerializer, PostSerializer, CommentSerializer,
     PostLikeSerializer, CommentLikeSerializer
@@ -15,6 +15,10 @@ from factories.post_factory import PostFactory
 from django.contrib.auth.models import User
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
+from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
+from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
 
 
 
@@ -352,3 +356,129 @@ class GoogleLogin(SocialLoginView):
                 {"error": "Google login failed. " + str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class FeedPagination(PageNumberPagination):
+    page_size = 10  # Limit the number of posts per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class NewsFeedView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access the feed
+
+    def get(self, request):
+        user = request.user
+        
+        # Check if 'liked' query parameter is set to 'true' and filter by liked posts
+        liked_filter = request.query_params.get('liked', None)
+        
+        if liked_filter == 'true':
+            # Fetch the post IDs from the PostLike table where the user has liked the posts
+            liked_posts_ids = PostLike.objects.filter(user=user).values_list('post_id', flat=True)
+
+            # Debugging: Print number of liked posts
+            print(f"Number of liked posts found: {len(liked_posts_ids)}")
+
+            if not liked_posts_ids:
+                return Response({"message": "No liked posts found."}, status=status.HTTP_404_NOT_FOUND)
+
+            # Fetch the posts using the liked post IDs
+            posts = Post.objects.filter(id__in=liked_posts_ids).select_related('author').prefetch_related('likes', 'comments').order_by('-created_at')
+
+            # Debugging: Print the SQL query generated
+            print(f"SQL Query: {str(posts.query)}")
+
+        else:
+            # Otherwise, fetch posts from followed users
+            followed_users = Follow.objects.filter(follower=user).values_list('followed', flat=True)
+            posts = Post.objects.filter(author__in=followed_users).select_related('author').prefetch_related('likes', 'comments').order_by('-created_at')
+
+        # Debugging: Print number of posts before pagination
+        print(f"Posts before pagination: {len(posts)}")
+
+        # Apply pagination
+        paginator = FeedPagination()
+        result_page = paginator.paginate_queryset(posts, request)
+
+        # Serialize the results
+        serializer = PostSerializer(result_page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+
+    
+import logging
+logger = logging.getLogger(__name__)
+
+class FollowView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can follow
+
+    def post(self, request, followed_user_id):
+        # Get the user that will be followed
+        followed_user = get_object_or_404(User, id=followed_user_id)
+
+        # Check if the user is trying to follow themselves
+        if followed_user == request.user:
+            return Response({"error": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the user is already following the target user
+        existing_follow = Follow.objects.filter(follower=request.user, followed=followed_user)
+
+        if existing_follow.exists():
+            # Log the issue and return the response
+            print(f"[DEBUG] User {request.user.username} is already following {followed_user.username}.")
+            return Response({"message": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a new follow relationship
+        Follow.objects.create(follower=request.user, followed=followed_user)
+
+        # Log the successful creation of the follow relationship
+        print(f"[DEBUG] User {request.user.username} successfully followed {followed_user.username}.")
+
+        # Return a response indicating successful follow
+        return Response({"message": f"You have successfully followed {followed_user.username}."}, status=status.HTTP_201_CREATED)
+    
+class UnfollowView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can unfollow
+
+    def post(self, request, followed_user_id):
+        # Get the user that will be unfollowed
+        followed_user = get_object_or_404(User, id=followed_user_id)
+        
+        # Check if the user is trying to unfollow themselves
+        if followed_user == request.user:
+            return Response({"error": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if the follow relationship exists
+        follow = Follow.objects.filter(follower=request.user, followed=followed_user)
+        if not follow.exists():
+            return Response({"error": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Delete the follow relationship
+        follow.delete()
+
+        return Response({"message": f"You have unfollowed {followed_user.username}"}, status=status.HTTP_200_OK)
+
+class UserFollowView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access the data
+
+    def get(self, request, user_id):
+        # Get the user whose followers and following we want to display
+        user = User.objects.get(id=user_id)
+
+        # Get the list of followers (people who follow this user)
+        followers = Follow.objects.filter(followed=user).values_list('follower', flat=True)
+        follower_users = User.objects.filter(id__in=followers)
+
+        # Get the list of following (people this user follows)
+        following = Follow.objects.filter(follower=user).values_list('followed', flat=True)
+        following_users = User.objects.filter(id__in=following)
+
+        # Prepare the response data
+        followers_data = [user.username for user in follower_users]
+        following_data = [user.username for user in following_users]
+
+        # Return the response with followers and following
+        return Response({
+            "followers": followers_data,
+            "following": following_data
+        })
