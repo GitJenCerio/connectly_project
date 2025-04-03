@@ -19,7 +19,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
-import requests
+from factories.feed_factory import FeedFactory
 
 
 
@@ -354,40 +354,26 @@ class NewsFeedView(APIView):
         user = request.user
         print(f"Authenticated user: {user.username} (ID: {user.id})")
         
-        # Debug: Check number of PostLike entries for this user
-        post_like_count = PostLike.objects.filter(user=user).count()
-        print(f"User {user.username} has {post_like_count} PostLike entries")
-
         # Retrieve the filter parameter (e.g., 'liked' or 'followed')
         filter_param = request.query_params.get('filter', None)
-        if filter_param:
-            filter_param = filter_param.lower().strip()
 
-        if filter_param == 'liked':
-            # Filter posts that have a PostLike with this user's id, using the through model's related name
-            posts = Post.objects.filter(post_likes_related__user__id=user.id).distinct()
+        # Use the FeedFactory to get the posts queryset
+        feed_factory = FeedFactory(user)
+        posts = feed_factory.get_feed(filter_param)
+
+        # Debug logs if needed (for example, printing out liked post ids if filter is 'liked')
+        if filter_param and filter_param.lower().strip() == 'liked':
             liked_post_ids = list(posts.values_list('id', flat=True))
             print(f"User {user.username} liked post IDs: {liked_post_ids}")
-        elif filter_param == 'followed':
-            # Get IDs of users that the authenticated user follows.
-            followed_users_ids = list(
-                Follow.objects.filter(follower=user).values_list('followed_id', flat=True)
-            )
+        elif filter_param and filter_param.lower().strip() == 'followed':
+            followed_users_ids = list(posts.values_list('author_id', flat=True).distinct())
             print(f"User {user.username} follows user IDs: {followed_users_ids}")
-            posts = Post.objects.filter(author_id__in=followed_users_ids)
-        else:
-            # Default: return all posts.
-            posts = Post.objects.all()
-
-        # Order posts by creation date descending and prefetch related PostLike and comments for performance.
-        posts = posts.order_by('-created_at').prefetch_related('post_likes_related', 'comments')
 
         # Apply pagination.
         paginator = FeedPagination()
         result_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
-
     
 import logging
 logger = logging.getLogger(__name__)
