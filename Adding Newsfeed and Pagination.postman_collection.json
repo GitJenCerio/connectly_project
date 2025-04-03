@@ -1,0 +1,1449 @@
+{
+	"info": {
+		"_postman_id": "6e3fa462-5181-4840-9835-5b9f4b69a0d8",
+		"name": "Adding Newsfeed and Pagination",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42431734"
+	},
+	"item": [
+		{
+			"name": "Test View of Users with No. of Followers & Following",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000/",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "jyO1ICYAQAiXylrIIXd0wCrlTTPPmt1k",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/users/7/follow-info/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"7",
+						"follow-info",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test View of Users with No. of Followers & Following",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000/",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "jyO1ICYAQAiXylrIIXd0wCrlTTPPmt1k",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/users/7/follow-info/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"users",
+								"7",
+								"follow-info",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 06:20:56 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "93"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"followers\": [],\n    \"following\": [\n        \"admin_user\",\n        \"new_user\",\n        \"regular_user\",\n        \"new_user3\",\n        \"test_user\"\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test View Feed with Limit number of Results",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000/",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "jyO1ICYAQAiXylrIIXd0wCrlTTPPmt1k",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test View Feed with Limit number of Results",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000/",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "jyO1ICYAQAiXylrIIXd0wCrlTTPPmt1k",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 06:40:04 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2249"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 53,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 54,\n            \"title\": \"Test Post 50\",\n            \"content\": \"This is test post number 50.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:31.277146Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 53,\n            \"title\": \"Test Post 49\",\n            \"content\": \"This is test post number 49.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:31.189731Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 52,\n            \"title\": \"Test Post 48\",\n            \"content\": \"This is test post number 48.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:31.071848Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 51,\n            \"title\": \"Test Post 47\",\n            \"content\": \"This is test post number 47.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.931960Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 50,\n            \"title\": \"Test Post 46\",\n            \"content\": \"This is test post number 46.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.839810Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 49,\n            \"title\": \"Test Post 45\",\n            \"content\": \"This is test post number 45.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.730016Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 48,\n            \"title\": \"Test Post 44\",\n            \"content\": \"This is test post number 44.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.638478Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 47,\n            \"title\": \"Test Post 43\",\n            \"content\": \"This is test post number 43.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.572320Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 46,\n            \"title\": \"Test Post 42\",\n            \"content\": \"This is test post number 42.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.463316Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 45,\n            \"title\": \"Test Post 41\",\n            \"content\": \"This is test post number 41.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.356006Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test View Feed Pagination",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/?page=2",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test View Feed Pagination",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/?page=2",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 06:41:53 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2279"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 53,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?page=3\",\n    \"previous\": \"https://127.0.0.1:8000/api/feed/\",\n    \"results\": [\n        {\n            \"id\": 44,\n            \"title\": \"Test Post 40\",\n            \"content\": \"This is test post number 40.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.256683Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 43,\n            \"title\": \"Test Post 39\",\n            \"content\": \"This is test post number 39.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.181047Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 42,\n            \"title\": \"Test Post 38\",\n            \"content\": \"This is test post number 38.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.072543Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 41,\n            \"title\": \"Test Post 37\",\n            \"content\": \"This is test post number 37.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:30.013863Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 40,\n            \"title\": \"Test Post 36\",\n            \"content\": \"This is test post number 36.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.921821Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 39,\n            \"title\": \"Test Post 35\",\n            \"content\": \"This is test post number 35.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.823428Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 38,\n            \"title\": \"Test Post 34\",\n            \"content\": \"This is test post number 34.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.748078Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 37,\n            \"title\": \"Test Post 33\",\n            \"content\": \"This is test post number 33.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.673505Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 36,\n            \"title\": \"Test Post 32\",\n            \"content\": \"This is test post number 32.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.606320Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 35,\n            \"title\": \"Test Post 31\",\n            \"content\": \"This is test post number 31.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:34:29.530539Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Following a User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/follow/10/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"follow",
+						"10",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Following a User",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/follow/10/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"follow",
+								"10",
+								""
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 07:05:49 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "51"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"You have successfully followed user3.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Following a User that is Already Followed",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/follow/10/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"follow",
+						"10",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Following a User that is Already Followed",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/follow/10/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"follow",
+								"10",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 07:06:40 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "50"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"You are already following this user.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Unfollowing a User",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/unfollow/10/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"unfollow",
+						"10",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Unfollowing a User",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/unfollow/10/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"unfollow",
+								"10",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 07:08:54 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "39"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"You have unfollowed user3\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Unfollowing a User that is not followed",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://127.0.0.1:8000",
+						"type": "text"
+					},
+					{
+						"key": "X-CSRFToken",
+						"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/unfollow/10/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"unfollow",
+						"10",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Unfollowing a User that is not followed",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Referer",
+								"value": "https://127.0.0.1:8000",
+								"type": "text"
+							},
+							{
+								"key": "X-CSRFToken",
+								"value": "T6P5xhzN6hRtcTqp1fI0Usttgjy6xIn6",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/unfollow/10/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"unfollow",
+								"10",
+								""
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Apr 2025 07:09:06 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "POST, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "44"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"error\": \"You are not following this user.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Test View Feed Post for All Users sorted by Latest Post",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test View Feed Post for All Users",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Apr 2025 08:23:16 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2435"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 73,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 74,\n            \"title\": \"Post 10 by user2\",\n            \"content\": \"This is content for post 10 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.708320Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 73,\n            \"title\": \"Post 9 by user2\",\n            \"content\": \"This is content for post 9 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.637694Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 72,\n            \"title\": \"Post 8 by user2\",\n            \"content\": \"This is content for post 8 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.556702Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 71,\n            \"title\": \"Post 7 by user2\",\n            \"content\": \"This is content for post 7 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.473485Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 70,\n            \"title\": \"Post 6 by user2\",\n            \"content\": \"This is content for post 6 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.371432Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 69,\n            \"title\": \"Post 5 by user2\",\n            \"content\": \"This is content for post 5 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.237051Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 68,\n            \"title\": \"Post 4 by user2\",\n            \"content\": \"This is content for post 4 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.115279Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 67,\n            \"title\": \"Post 3 by user2\",\n            \"content\": \"This is content for post 3 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.036708Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0\n        },\n        {\n            \"id\": 66,\n            \"title\": \"Post 2 by user2\",\n            \"content\": \"This is content for post 2 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:21.932826Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"user2\",\n                \"admin_user\"\n            ],\n            \"like_count\": 2\n        },\n        {\n            \"id\": 65,\n            \"title\": \"Post 1 by user2\",\n            \"content\": \"This is content for post 1 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:21.850534Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"user2\",\n                \"admin_user\"\n            ],\n            \"like_count\": 2\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Feed Filtered by Followed Users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/?filter=followed",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "followed"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Feed Filtered by Followed Users",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/?filter=followed",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "followed"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Apr 2025 08:24:24 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "875"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 3,\n    \"next\": null,\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 4,\n            \"title\": \"My Third Post\",\n            \"content\": \"This is a Third post.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-03-26T06:14:06.376624Z\",\n            \"author\": \"regular_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 3,\n            \"title\": \"My Second Post\",\n            \"content\": \"This is a Second post.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-03-26T06:13:54.101831Z\",\n            \"author\": \"regular_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 2,\n            \"title\": \"This is Post from regular_user\",\n            \"content\": \"This is a sample post from regular_user.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-03-26T05:45:33.783330Z\",\n            \"author\": \"regular_user\",\n            \"comments\": [\n                {\n                    \"id\": 2,\n                    \"post\": 2,\n                    \"text\": \"This is a Test Comment!\",\n                    \"author\": \"regular_user\",\n                    \"created_at\": \"2025-03-26T05:59:30.307352Z\"\n                }\n            ],\n            \"comment_count\": 1,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Feed Filtered by Liked Posts, sorted by Latest Date",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/?filter=liked",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "liked"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Feed Filtered by Liked Posts, sorted by Latest Date",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin_user\",\r\n    \"password\": \"admin123\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/?filter=liked",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "liked"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 03 Apr 2025 08:25:21 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "2460"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 17,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?filter=liked&page=2\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 74,\n            \"title\": \"Post 10 by user2\",\n            \"content\": \"This is content for post 10 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.708320Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 73,\n            \"title\": \"Post 9 by user2\",\n            \"content\": \"This is content for post 9 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.637694Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 72,\n            \"title\": \"Post 8 by user2\",\n            \"content\": \"This is content for post 8 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.556702Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 71,\n            \"title\": \"Post 7 by user2\",\n            \"content\": \"This is content for post 7 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.473485Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 70,\n            \"title\": \"Post 6 by user2\",\n            \"content\": \"This is content for post 6 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.371432Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 69,\n            \"title\": \"Post 5 by user2\",\n            \"content\": \"This is content for post 5 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.237051Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 68,\n            \"title\": \"Post 4 by user2\",\n            \"content\": \"This is content for post 4 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.115279Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        },\n        {\n            \"id\": 66,\n            \"title\": \"Post 2 by user2\",\n            \"content\": \"This is content for post 2 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:21.932826Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"user2\",\n                \"admin_user\"\n            ],\n            \"like_count\": 2\n        },\n        {\n            \"id\": 65,\n            \"title\": \"Post 1 by user2\",\n            \"content\": \"This is content for post 1 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:21.850534Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"user2\",\n                \"admin_user\"\n            ],\n            \"like_count\": 2\n        },\n        {\n            \"id\": 62,\n            \"title\": \"Post 8 by user1\",\n            \"content\": \"This is content for post 8 by user1.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:21.589989Z\",\n            \"author\": \"user1\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}

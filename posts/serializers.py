@@ -54,11 +54,14 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.comments.count()
 
     def get_like_count(self, obj):
-        return obj.likes.count()
+        # Use the through model related name to count likes
+        return obj.post_likes_related.count()
 
     def get_likes(self, obj):
-        # Fetch the likes for the post through the PostLike model
-        return [like.user.username for like in obj.post_likes_related.all()]
+        # Return the usernames of users who liked the post, using the through model data
+        return [pl.user.username for pl in obj.post_likes_related.all()]
+
+
 
 class PostLikeSerializer(serializers.ModelSerializer):
     # Mark user as read-only to auto-assign from logged-in user

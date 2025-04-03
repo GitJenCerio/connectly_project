@@ -19,6 +19,8 @@ from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
+import requests
+
 
 
 
@@ -226,23 +228,6 @@ class CommentDetailView(APIView):
 # -----------------------------
 #   POST LIKE VIEWS
 # -----------------------------
-class PostLikeListCreateView(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get(self, request):
-        post_likes = PostLike.objects.all()
-        serializer = PostLikeSerializer(post_likes, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = PostLikeSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            post_like = serializer.save()
-            logger.info(f"{post_like.user.username} liked {post_like.post.title}")
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        logger.error(f"Error creating post like: {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostLikeDetailView(APIView):
@@ -363,54 +348,71 @@ class FeedPagination(PageNumberPagination):
     max_page_size = 100
 
 class NewsFeedView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access the feed
+    authentication_classes = [TokenAuthentication]
 
     def get(self, request):
         user = request.user
+        print(f"Authenticated user: {user.username} (ID: {user.id})")
         
-        # Check if 'liked' query parameter is set to 'true' and filter by liked posts
-        liked_filter = request.query_params.get('liked', None)
-        
-        if liked_filter == 'true':
-            # Fetch the post IDs from the PostLike table where the user has liked the posts
-            liked_posts_ids = PostLike.objects.filter(user=user).values_list('post_id', flat=True)
+        # Debug: Check number of PostLike entries for this user
+        post_like_count = PostLike.objects.filter(user=user).count()
+        print(f"User {user.username} has {post_like_count} PostLike entries")
 
-            # Debugging: Print number of liked posts
-            print(f"Number of liked posts found: {len(liked_posts_ids)}")
+        # Retrieve the filter parameter (e.g., 'liked' or 'followed')
+        filter_param = request.query_params.get('filter', None)
+        if filter_param:
+            filter_param = filter_param.lower().strip()
 
-            if not liked_posts_ids:
-                return Response({"message": "No liked posts found."}, status=status.HTTP_404_NOT_FOUND)
-
-            # Fetch the posts using the liked post IDs
-            posts = Post.objects.filter(id__in=liked_posts_ids).select_related('author').prefetch_related('likes', 'comments').order_by('-created_at')
-
-            # Debugging: Print the SQL query generated
-            print(f"SQL Query: {str(posts.query)}")
-
+        if filter_param == 'liked':
+            # Filter posts that have a PostLike with this user's id, using the through model's related name
+            posts = Post.objects.filter(post_likes_related__user__id=user.id).distinct()
+            liked_post_ids = list(posts.values_list('id', flat=True))
+            print(f"User {user.username} liked post IDs: {liked_post_ids}")
+        elif filter_param == 'followed':
+            # Get IDs of users that the authenticated user follows.
+            followed_users_ids = list(
+                Follow.objects.filter(follower=user).values_list('followed_id', flat=True)
+            )
+            print(f"User {user.username} follows user IDs: {followed_users_ids}")
+            posts = Post.objects.filter(author_id__in=followed_users_ids)
         else:
-            # Otherwise, fetch posts from followed users
-            followed_users = Follow.objects.filter(follower=user).values_list('followed', flat=True)
-            posts = Post.objects.filter(author__in=followed_users).select_related('author').prefetch_related('likes', 'comments').order_by('-created_at')
+            # Default: return all posts.
+            posts = Post.objects.all()
 
-        # Debugging: Print number of posts before pagination
-        print(f"Posts before pagination: {len(posts)}")
+        # Order posts by creation date descending and prefetch related PostLike and comments for performance.
+        posts = posts.order_by('-created_at').prefetch_related('post_likes_related', 'comments')
 
-        # Apply pagination
+        # Apply pagination.
         paginator = FeedPagination()
         result_page = paginator.paginate_queryset(posts, request)
-
-        # Serialize the results
         serializer = PostSerializer(result_page, many=True)
-
         return paginator.get_paginated_response(serializer.data)
-
 
     
 import logging
 logger = logging.getLogger(__name__)
 
+class PostLikeListCreateView(APIView):
+    authentication_classes = [TokenAuthentication]
+    
+
+    def get(self, request):
+        post_likes = PostLike.objects.all()
+        serializer = PostLikeSerializer(post_likes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PostLikeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            post_like = serializer.save()
+            logger.info(f"{post_like.user.username} liked {post_like.post.title}")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error(f"Error creating post like: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class FollowView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can follow
+    authentication_classes = [TokenAuthentication]
 
     def post(self, request, followed_user_id):
         # Get the user that will be followed
@@ -438,7 +440,7 @@ class FollowView(APIView):
         return Response({"message": f"You have successfully followed {followed_user.username}."}, status=status.HTTP_201_CREATED)
     
 class UnfollowView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can unfollow
+    authentication_classes = [TokenAuthentication]
 
     def post(self, request, followed_user_id):
         # Get the user that will be unfollowed
@@ -459,8 +461,8 @@ class UnfollowView(APIView):
         return Response({"message": f"You have unfollowed {followed_user.username}"}, status=status.HTTP_200_OK)
 
 class UserFollowView(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure only authenticated users can access the data
-
+    authentication_classes = [TokenAuthentication]
+    
     def get(self, request, user_id):
         # Get the user whose followers and following we want to display
         user = User.objects.get(id=user_id)
