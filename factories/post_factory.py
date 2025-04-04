@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class PostFactory:
     @staticmethod
-    def create_post(post_type, title, content='', metadata=None, author=None):
+    def create_post(post_type, title, content='', metadata=None, author=None, privacy='public'):
         if metadata is None:
             metadata = {}
 
@@ -23,5 +23,6 @@ class PostFactory:
             content=content,
             post_type=post_type,
             metadata=metadata,
-            author=author
+            author=author,
+            privacy=privacy  # ✅ This line enables saving private/public status
         )

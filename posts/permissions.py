@@ -9,10 +9,16 @@ class IsAuthorOrReadOnly(BasePermission):
         if request.method in ('GET', 'HEAD', 'OPTIONS'):
             return True
         return obj.author == request.user
-
-class IsAdminUser(BasePermission):
-    """
-    Custom permission to only allow admin users to access a particular view.
-    """
+    
+class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.is_staff
+        return request.method in ('GET', 'HEAD') or request.user.is_authenticated and request.user.is_staff
+
+class IsAuthorOrAdmin(BasePermission):
+    """
+    Allow access to authors and admin users only.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user or request.user.is_staff
+
