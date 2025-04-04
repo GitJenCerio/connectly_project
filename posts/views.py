@@ -10,7 +10,6 @@ from .serializers import (
     UserSerializer, PostSerializer, CommentSerializer,
     PostLikeSerializer, CommentLikeSerializer
 )
-from .permissions import IsAuthorOrReadOnly
 from factories.post_factory import PostFactory
 from django.contrib.auth.models import User
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
@@ -20,7 +19,11 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from django.core.cache import cache
 from factories.feed_factory import FeedFactory
-
+from .permissions import IsAuthorOrReadOnly, IsAuthorOrAdmin
+from .utils import has_role
+from .base import BaseLoggedAPIView
+from hashlib import md5
+import json
 
 
 
@@ -35,24 +38,24 @@ logger = LoggerSingleton().get_logger()
 logger.info("API initialized successfully.")
 
 
-class UserListCreate(APIView):
- def get(self, request):
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
- 
- def post(self, request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data,
-        status=status.HTTP_201_CREATED)
-    return Response(serializer.errors,
-    status=status.HTTP_400_BAD_REQUEST)
 
-class UserDetailView(APIView):
+class UserListCreate(BaseLoggedAPIView):
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDetailView(BaseLoggedAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]  # Allow only authenticated users + object-level permission
+    permission_classes = [IsAuthorOrReadOnly]
 
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
@@ -61,66 +64,64 @@ class UserDetailView(APIView):
 
     def put(self, request, pk):
         user = get_object_or_404(User, pk=pk)
-
-        # `IsAuthorOrReadOnly` will automatically deny access if the user is not the author
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             updated_user = serializer.save()
-            logger.info(f"Updated user: {updated_user.username}")
+            self.logger.info(f"Updated user: {updated_user.username}")
             return Response(serializer.data)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         user = get_object_or_404(User, pk=pk)
-
-        # Allow only the user themselves or an admin to delete
-        if request.user != user and not request.user.is_staff:
-            return Response(
-                {"error": "You do not have permission to delete this user."},
-                status=status.HTTP_403_FORBIDDEN
-            )
-
+        if request.user != user and not has_role(request.user, 'admin'):
+            return Response({"error": "You do not have permission to delete this user."}, status=status.HTTP_403_FORBIDDEN)
         username = user.username
-        logger.info(f"Deleted user: {username}")
+        self.logger.info(f"Deleted user: {username}")
         user.delete()
-
-        return Response(
-            {
-                "message": f"User '{username}' has been deleted successfully.",
-                "user_id": pk
-            },
-            status=status.HTTP_200_OK
-        )
-
+        return Response({"message": f"User '{username}' has been deleted successfully.", "user_id": pk}, status=status.HTTP_200_OK)
 # -----------------------------
 #   POST VIEWS
 # -----------------------------
-class PostView(APIView):
+class PostView(BaseLoggedAPIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_permissions(self):
         if self.request.method == 'POST':
             return [IsAuthenticated()]
-        elif self.request.method in ['PUT', 'DELETE']:
+        elif self.request.method == 'PUT':
             return [IsAuthorOrReadOnly()]
-        return [permission() for permission in self.permission_classes]
+        elif self.request.method == 'DELETE':
+            return [IsAuthorOrAdmin()]
+        return [IsAuthenticatedOrReadOnly()]
 
     def get_object(self, pk):
         return get_object_or_404(Post, pk=pk)
 
     def get(self, request, pk=None):
+        user = request.user if request.user.is_authenticated else None
+
         if pk:
             post = self.get_object(pk)
+            if post.privacy == 'private':
+                if not user or post.author != user:
+                    return Response({'detail': 'This post is private.'}, status=status.HTTP_403_FORBIDDEN)
             serializer = PostSerializer(post)
             return Response(serializer.data)
+
+        # List view: return public posts for guests; public + own private posts for authenticated users
+        if user:
+            posts = Post.objects.filter(Q(privacy='public') | Q(author=user))
         else:
-            posts = Post.objects.all()
-            serializer = PostSerializer(posts, many=True)
-            return Response(serializer.data)
+            posts = Post.objects.filter(privacy='public')
+
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
 
     def post(self, request):
+        if has_role(request.user, 'guest'):
+            return Response({'error': 'Guests are not allowed to create posts.'}, status=status.HTTP_403_FORBIDDEN)
+        
         data = request.data
         try:
             post = PostFactory.create_post(
@@ -128,21 +129,17 @@ class PostView(APIView):
                 title=data['title'],
                 content=data.get('content', ''),
                 metadata=data.get('metadata', {}),
-                author=request.user  # ✅ Author is assigned here already
+                privacy=data.get('privacy', 'public'),  # 👈 include this!
+                author=request.user
             )
-
-            print(type(request.user), request.user)
-
-            return Response(
-                {'message': 'Post created successfully!', 'post_id': post.id},
-                status=status.HTTP_201_CREATED
-            )
-
+            return Response({'message': 'Post created successfully!', 'post_id': post.id}, status=status.HTTP_201_CREATED)
+        
         except KeyError as e:
             return Response({'error': f'Missing field: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
     def put(self, request, pk=None):
         if not pk:
@@ -152,23 +149,18 @@ class PostView(APIView):
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             updated_post = serializer.save()
-            logger.info(f"Updated post: {updated_post.title}")
+            self.logger.info(f"Updated post: {updated_post.title}")
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         if not pk:
             return Response({'error': 'Post ID is required for DELETE'}, status=status.HTTP_400_BAD_REQUEST)
-        
         post = self.get_object(pk)
         self.check_object_permissions(request, post)
-        logger.info(f"Deleted post: {post.title}")
+        self.logger.info(f"Deleted post: {post.title}")
         post.delete()
-
-        return Response({
-            "message": f"Post '{post.title}' has been deleted successfully.",
-            "post_id": pk
-        }, status=status.HTTP_200_OK)
+        return Response({"message": f"Post '{post.title}' has been deleted successfully.", "post_id": pk}, status=status.HTTP_200_OK)
 
 # -----------------------------
 #   COMMENT VIEWS
@@ -184,6 +176,8 @@ class CommentListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if has_role(request.user, 'guest'):
+            return Response({'error': 'Guests cannot comment.'}, status=status.HTTP_403_FORBIDDEN)
         # Pass request in the context so that the serializer can auto-assign the author
         serializer = CommentSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -348,33 +342,51 @@ class FeedPagination(PageNumberPagination):
     max_page_size = 100
 
 class NewsFeedView(APIView):
-    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-        print(f"Authenticated user: {user.username} (ID: {user.id})")
-        
-        # Retrieve the filter parameter (e.g., 'liked' or 'followed')
-        filter_param = request.query_params.get('filter', None)
+        filter_param = request.query_params.get('filter', '').lower().strip()
+        page_number = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 10)
 
-        # Use the FeedFactory to get the posts queryset
-        feed_factory = FeedFactory(user)
-        posts = feed_factory.get_feed(filter_param)
+        # Create a unique cache key
+        key_raw = f"feed:{user.id}:{filter_param}:{page_number}:{page_size}"
+        cache_key = md5(key_raw.encode()).hexdigest()
 
-        # Debug logs if needed (for example, printing out liked post ids if filter is 'liked')
-        if filter_param and filter_param.lower().strip() == 'liked':
-            liked_post_ids = list(posts.values_list('id', flat=True))
-            print(f"User {user.username} liked post IDs: {liked_post_ids}")
-        elif filter_param and filter_param.lower().strip() == 'followed':
-            followed_users_ids = list(posts.values_list('author_id', flat=True).distinct())
-            print(f"User {user.username} follows user IDs: {followed_users_ids}")
+        cached_response = cache.get(cache_key)
+        if cached_response:
+            return Response(cached_response)
 
-        # Apply pagination.
+        # --- Filtering Logic ---
+        if not user.is_authenticated:
+            posts = Post.objects.filter(privacy='public')
+        else:
+            if filter_param == 'liked':
+                posts = Post.objects.filter(postlike__user=user)
+            elif filter_param == 'followed':
+                followed_user_ids = user.following.values_list('id', flat=True)
+                posts = Post.objects.filter(author__id__in=followed_user_ids, privacy='public')
+            elif filter_param == 'public':
+                posts = Post.objects.filter(privacy='public')
+            elif filter_param == 'private':
+                posts = Post.objects.filter(author=user, privacy='private')
+            else:
+                posts = Post.objects.filter(Q(privacy='public') | Q(author=user))
+
+        posts = posts.select_related('author').prefetch_related('comments', 'likes').order_by('-created_at')
+
+        # --- Pagination ---
         paginator = FeedPagination()
         result_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-    
+
+        paginated_response = paginator.get_paginated_response(serializer.data)
+
+        # Cache response data only, not Response object
+        cache.set(cache_key, paginated_response.data, timeout=60)  # cache for 1 minute
+        return paginated_response
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -401,6 +413,8 @@ class FollowView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def post(self, request, followed_user_id):
+        if has_role(request.user, 'guest'):
+            return Response({'error': 'Guests cannot follow or unfollow users.'}, status=status.HTTP_403_FORBIDDEN)
         # Get the user that will be followed
         followed_user = get_object_or_404(User, id=followed_user_id)
 
