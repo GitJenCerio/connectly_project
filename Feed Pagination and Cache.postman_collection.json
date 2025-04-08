@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "76188516-f143-452f-b485-99998e4ab5b7",
+		"name": "Feed Pagination and Cache",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42431734"
+	},
+	"item": [
+		{
+			"name": "Test Feed Pagination Parameters",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"post_type\": \"text\",\r\n  \"title\": \"This is a Test Private Post\",\r\n  \"content\": \"Only I can see this.\",\r\n  \"metadata\": {},\r\n  \"privacy\": \"private\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed?page=1&page_size=5",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page_size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Feed Pagination Parameters",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"post_type\": \"text\",\r\n  \"title\": \"This is a Test Private Post\",\r\n  \"content\": \"Only I can see this.\",\r\n  \"metadata\": {},\r\n  \"privacy\": \"private\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed?page=1&page_size=5",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page_size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 04 Apr 2025 09:51:35 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1302"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 78,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?page=2&page_size=5\",\n    \"previous\": null,\n    \"results\": [\n        {\n            \"id\": 81,\n            \"title\": \"This is a Test Private Post\",\n            \"content\": \"Only I can see this.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T08:10:12.968248Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"private\"\n        },\n        {\n            \"id\": 80,\n            \"title\": \"This is a Test Private Post\",\n            \"content\": \"Only I can see this.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T08:09:13.292473Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"private\"\n        },\n        {\n            \"id\": 79,\n            \"title\": \"This is a New Private Post\",\n            \"content\": \"Only I can see this.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T08:05:00.848122Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 78,\n            \"title\": \"This is a Private Post\",\n            \"content\": \"Only I can see this.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T07:53:10.380840Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 77,\n            \"title\": \"This is a Private Post\",\n            \"content\": \"Only I can see this.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T07:52:13.187247Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"public\"\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Feed Pagination Page 2",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://127.0.0.1:8000/api/feed/?page=2&page_size=5",
+					"protocol": "https",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"feed",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "page_size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Test Feed Pagination Page 2",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Token 563e6abecfd50d912365558f7cc97b556a8343fc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://127.0.0.1:8000/api/feed/?page=2&page_size=5",
+							"protocol": "https",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"feed",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "page_size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/3.1.3 Python/3.13.2"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 04 Apr 2025 09:50:33 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "1378"
+						},
+						{
+							"key": "Strict-Transport-Security",
+							"value": "max-age=31536000; includeSubDomains; preload"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Cross-Origin-Opener-Policy",
+							"value": "same-origin"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"count\": 78,\n    \"next\": \"https://127.0.0.1:8000/api/feed/?page=3&page_size=5\",\n    \"previous\": \"https://127.0.0.1:8000/api/feed/?page_size=5\",\n    \"results\": [\n        {\n            \"id\": 76,\n            \"title\": \"This is a Public Post\",\n            \"content\": \"Visible to all users.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T07:51:13.660502Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 75,\n            \"title\": \"This is a Public Post\",\n            \"content\": \"Visible to all users.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-04T07:49:48.554619Z\",\n            \"author\": \"admin_user\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [],\n            \"like_count\": 0,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 74,\n            \"title\": \"Post 10 by user2\",\n            \"content\": \"This is content for post 10 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.708320Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 73,\n            \"title\": \"Post 9 by user2\",\n            \"content\": \"This is content for post 9 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.637694Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1,\n            \"privacy\": \"public\"\n        },\n        {\n            \"id\": 72,\n            \"title\": \"Post 8 by user2\",\n            \"content\": \"This is content for post 8 by user2.\",\n            \"post_type\": \"text\",\n            \"created_at\": \"2025-04-02T06:47:22.556702Z\",\n            \"author\": \"user2\",\n            \"comments\": [],\n            \"comment_count\": 0,\n            \"likes\": [\n                \"admin_user\"\n            ],\n            \"like_count\": 1,\n            \"privacy\": \"public\"\n        }\n    ]\n}"
+				}
+			]
+		}
+	]
+}

@@ -23,7 +23,7 @@ from .permissions import IsAuthorOrReadOnly, IsAuthorOrAdmin
 from .utils import has_role
 from .base import BaseLoggedAPIView
 from hashlib import md5
-import json
+from rest_framework.permissions import AllowAny
 
 
 
@@ -337,56 +337,43 @@ class GoogleLogin(SocialLoginView):
             )
 
 class FeedPagination(PageNumberPagination):
-    page_size = 10  # Limit the number of posts per page
+    page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 class NewsFeedView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        user = request.user
-        filter_param = request.query_params.get('filter', '').lower().strip()
+        # Handle unauthenticated users
+        user = request.user if request.user.is_authenticated else None
+        filter_param = request.query_params.get('filter')
         page_number = request.query_params.get('page', 1)
         page_size = request.query_params.get('page_size', 10)
 
-        # Create a unique cache key
-        key_raw = f"feed:{user.id}:{filter_param}:{page_number}:{page_size}"
+        # Safe cache key even for anonymous users
+        user_id = user.id if user else 'anon'
+        key_raw = f"feed:{user_id}:{filter_param}:{page_number}:{page_size}"
         cache_key = md5(key_raw.encode()).hexdigest()
 
+        # Check cache
         cached_response = cache.get(cache_key)
         if cached_response:
             return Response(cached_response)
 
-        # --- Filtering Logic ---
-        if not user.is_authenticated:
-            posts = Post.objects.filter(privacy='public')
-        else:
-            if filter_param == 'liked':
-                posts = Post.objects.filter(postlike__user=user)
-            elif filter_param == 'followed':
-                followed_user_ids = user.following.values_list('id', flat=True)
-                posts = Post.objects.filter(author__id__in=followed_user_ids, privacy='public')
-            elif filter_param == 'public':
-                posts = Post.objects.filter(privacy='public')
-            elif filter_param == 'private':
-                posts = Post.objects.filter(author=user, privacy='private')
-            else:
-                posts = Post.objects.filter(Q(privacy='public') | Q(author=user))
+        # Get feed
+        feed = FeedFactory(user).get_feed(filter_param)
 
-        posts = posts.select_related('author').prefetch_related('comments', 'likes').order_by('-created_at')
-
-        # --- Pagination ---
+        # Paginate
         paginator = FeedPagination()
-        result_page = paginator.paginate_queryset(posts, request)
+        result_page = paginator.paginate_queryset(feed, request)
         serializer = PostSerializer(result_page, many=True)
-
         paginated_response = paginator.get_paginated_response(serializer.data)
 
-        # Cache response data only, not Response object
-        cache.set(cache_key, paginated_response.data, timeout=60)  # cache for 1 minute
+        # Cache paginated data
+        cache.set(cache_key, paginated_response.data, timeout=60)
         return paginated_response
-
+    
 import logging
 logger = logging.getLogger(__name__)
 

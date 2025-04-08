@@ -29,7 +29,11 @@ SECRET_KEY = 'django-insecure-(hn(65eua4!+$2oyb^7x+9cs9a8ppycg)k6cj8_3z=v(x3465i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "testserver"  # ✅ Add this line
+]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1',
@@ -137,12 +141,14 @@ DATABASES = {
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-sample',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # <- Connects to Redis on port 6379
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
-
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
